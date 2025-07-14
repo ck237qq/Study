@@ -2,27 +2,31 @@ package com.example.study.service.impl;
 
 import com.example.study.dto._event.EventMessage;
 import com.example.study.dto._event.ResultCode;
-import com.example.study.dto.req.LogInReq;
+import com.example.study.dto.req.ChangePasswordReq;
+import com.example.study.dto.res.UserInfoRes;
 import com.example.study.entity.UserInfo;
 import com.example.study.repository.UserInfoRepository;
+import com.example.study.security.BaseUser;
 import com.example.study.service.AccessService;
 import com.example.study.utils.CommonUtils;
 import com.example.study.utils.HashUtils;
-import com.example.study.utils.JwtUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 @Slf4j
 @Service
 public class AccessServiceImpl implements AccessService {
     private final UserInfoRepository userInfoRepository;
-    private final JwtUtil jwtUtil;
 
-    public AccessServiceImpl(UserInfoRepository userInfoRepository, JwtUtil jwtUtil) {
+    public AccessServiceImpl(UserInfoRepository userInfoRepository) {
         this.userInfoRepository = userInfoRepository;
-        this.jwtUtil = jwtUtil;
 
         // 自動生成管理員帳號
         if (userInfoRepository.findByAccount("admin") == null) {
@@ -40,26 +44,40 @@ public class AccessServiceImpl implements AccessService {
         }
     }
 
-
-    public EventMessage<String> login(LogInReq logInReq) {
-        UserInfo userInfo = userInfoRepository.findByAccount(logInReq.getAccount());
-        if (userInfo == null) {
-            String code = ResultCode.ERR_2002.getCode();
-            String msg = ResultCode.ERR_2002.getDesc();
-            return CommonUtils.setExceptionEventMessage(code, msg, null);
+    public EventMessage<List<UserInfoRes>> findAccess () {
+        List<UserInfo> userInfoList = userInfoRepository.findAll();
+        List<UserInfoRes> userInfoResList = new ArrayList<>();
+        for (UserInfo userInfo : userInfoList) {
+            UserInfoRes userInfoRes = new UserInfoRes();
+            BeanUtils.copyProperties(userInfo, userInfoRes);
+            userInfoResList.add(userInfoRes);
         }
-        String hashedPassword = userInfo.getPassword();
-        String rawPassword = logInReq.getPassword() + "_" + userInfo.getPasswordUpdateTime();
-
-        if (!HashUtils.verifyPassword(rawPassword, hashedPassword)) {
-            String code = ResultCode.ERR_2002.getCode();
-            String msg = ResultCode.ERR_2002.getDesc();
-            return CommonUtils.setExceptionEventMessage(code, msg, null);
-        }
-        return CommonUtils.setDefaultEventMessage(genJwtToken(userInfo.getUserInfoId().toString()));
+        return CommonUtils.setDefaultEventMessage(userInfoResList);
     }
 
-    private String genJwtToken(String userIdString) {
-        return jwtUtil.generateToken(userIdString, "study");
+    public EventMessage<String> changePassword(ChangePasswordReq changePasswordReq,  BaseUser baseUser) {
+        Optional<UserInfo> userInfoOptional = userInfoRepository.findById(changePasswordReq.getUserInfoId());
+        if (userInfoOptional.isEmpty()) {
+            String code = ResultCode.ERR_2001.getCode();
+            String msg = ResultCode.ERR_2001.getDesc();
+            return CommonUtils.setExceptionEventMessage(code, msg, null);
+        }
+
+        UserInfo userInfo = userInfoOptional.get();
+        // 非使用者本人不允許修改密碼
+        if (!Objects.equals(userInfo.getUserInfoId(), baseUser.getUserInfoId())) {
+            String code = ResultCode.ERR_2001.getCode();
+            String msg = ResultCode.ERR_2001.getDesc();
+            return CommonUtils.setExceptionEventMessage(code, msg, null);
+        }
+
+        long nowTime = new Date().getTime();
+        String hashPassword = HashUtils.hashPassword(changePasswordReq.getPassword() + "_" + nowTime);
+        userInfo.setPassword(hashPassword);
+        userInfo.setPasswordUpdateTime(nowTime);
+        userInfoRepository.save(userInfo);
+
+        String msg = ResultCode.ERR_0000.getDesc();
+        return CommonUtils.setDefaultEventMessage(msg);
     }
 }
