@@ -12,6 +12,7 @@ import com.example.study.utils.CommonUtils;
 import com.example.study.utils.HashUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -79,5 +80,20 @@ public class AccessServiceImpl implements AccessService {
 
         String msg = ResultCode.ERR_0000.getDesc();
         return CommonUtils.setDefaultEventMessage(msg);
+    }
+
+    public BaseUser loadUserByUsername(String userIdString) throws UsernameNotFoundException {
+        long userId = Long.parseLong(userIdString);
+        Optional<UserInfo> userInfoOptional = userInfoRepository.findById(userId);
+
+        if (userInfoOptional.isEmpty()) {
+            throw new UsernameNotFoundException("User not found with userId : " + userId);
+        }
+
+        UserInfo userInfo = userInfoOptional.get();
+        BaseUser baseUser = new BaseUser();
+        BeanUtils.copyProperties(userInfo, baseUser);
+
+        return baseUser;
     }
 }
