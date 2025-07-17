@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/login")
+@RequestMapping("/loginManage")
 @Tag(name = "登入管理")
 public class LoginController {
     private final LoginService loginService;

@@ -42,7 +42,7 @@ public class SecurityConfig {
                         "/v3/api-docs/**",
                         "/error",
                         "/actuator/**",
-                        "/login/**"// 認證相關
+                        "/loginManage/**"// 認證相關
                 ).permitAll()
                 .anyRequest().authenticated()
                 .and()

@@ -26,6 +26,12 @@ public class UserInfo {
 
     private String name;
 
+    private String email;
+
+    private String mobilePhone;
+
+    private Long birthDate;
+
     private long buildT;
 
     private long uploadT;

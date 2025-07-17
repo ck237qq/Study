@@ -1,11 +1,15 @@
 package com.example.study.controller;
 
 import com.example.study.dto._event.EventMessage;
-import com.example.study.dto.req.ChangePasswordReq;
+import com.example.study.dto.req.UpdatePasswordReq;
+import com.example.study.dto.req.UpdateStateReq;
+import com.example.study.dto.req.UpdateUserInfoReq;
+import com.example.study.dto.res.BaseInfoRes;
 import com.example.study.dto.res.UserInfoRes;
 import com.example.study.security.BaseUser;
 import com.example.study.service.AccessService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -23,16 +27,37 @@ import java.util.List;
 public class AccessController {
     private final AccessService accessService;
 
+
+    @Operation(summary = "更換使用者資訊", description = "更換使用者資訊")
+    @RequestMapping(value = "/updateUserInfo", method = RequestMethod.PUT)
+    public EventMessage<String> updateUserInfo(@RequestBody UpdateUserInfoReq updateUserInfoReq) {
+        return accessService.updateUserInfo(updateUserInfoReq);
+    }
+
+    @Operation(summary = "更換狀態", description = "更換狀態")
+    @RequestMapping(value = "/updateState", method = RequestMethod.PUT)
+    EventMessage<String> updateState(@RequestBody UpdateStateReq updateStateReq) {
+        return accessService.updateState(updateStateReq);
+    }
+
     @Operation(summary = "查詢全部使用者", description = "查詢全部使用者")
-    @RequestMapping(value = "/findAccess", method = RequestMethod.GET)
-    public EventMessage<List<UserInfoRes>> findAccess() {
-        return accessService.findAccess();
+    @RequestMapping(value = "/findBaseInfo", method = RequestMethod.GET)
+    public EventMessage<List<BaseInfoRes>> findBaseInfo() {
+        return accessService.findBaseInfo();
+    }
+
+    @Operation(summary = "查詢指定使用者", description = "查詢指定使用者")
+    @RequestMapping(value = "/getAccessById", method = RequestMethod.GET)
+    public EventMessage<UserInfoRes> getAccessById(Long userInfoId) {
+        return accessService.getAccessById(userInfoId);
     }
 
     @Operation(summary = "更換密碼", description = "更換密碼")
-    @RequestMapping(value = "/changePassword", method = RequestMethod.POST)
-    public EventMessage<String> changePassword(@RequestBody ChangePasswordReq changePasswordReq, @AuthenticationPrincipal BaseUser baseUser) {
-        return accessService.changePassword(changePasswordReq, baseUser);
+    @RequestMapping(value = "/updatePassword", method = RequestMethod.PUT)
+    public EventMessage<String> updatePassword(
+            @RequestBody UpdatePasswordReq updatePasswordReq,
+            @Parameter(hidden = true) @AuthenticationPrincipal BaseUser baseUser) {
+        return accessService.updatePassword(updatePasswordReq, baseUser);
     }
 
 

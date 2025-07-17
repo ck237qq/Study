@@ -1,19 +1,15 @@
-package com.example.study.dto.res;
-
+package com.example.study.dto.req;
 
 import lombok.Data;
 
 @Data
-public class UserInfoRes {
+public class UpdateUserInfoReq {
 
     private Long userInfoId;
-
-    private String name;
 
     private String email;
 
     private String mobilePhone;
 
-    private Long birthDate;
-
+    private String birthDateString;
 }

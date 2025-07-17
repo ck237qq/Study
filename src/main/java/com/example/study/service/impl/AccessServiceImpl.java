@@ -2,7 +2,10 @@ package com.example.study.service.impl;
 
 import com.example.study.dto._event.EventMessage;
 import com.example.study.dto._event.ResultCode;
-import com.example.study.dto.req.ChangePasswordReq;
+import com.example.study.dto.req.UpdatePasswordReq;
+import com.example.study.dto.req.UpdateStateReq;
+import com.example.study.dto.req.UpdateUserInfoReq;
+import com.example.study.dto.res.BaseInfoRes;
 import com.example.study.dto.res.UserInfoRes;
 import com.example.study.entity.UserInfo;
 import com.example.study.repository.UserInfoRepository;
@@ -15,6 +18,8 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -45,41 +50,79 @@ public class AccessServiceImpl implements AccessService {
         }
     }
 
-    public EventMessage<List<UserInfoRes>> findAccess () {
-        List<UserInfo> userInfoList = userInfoRepository.findAll();
-        List<UserInfoRes> userInfoResList = new ArrayList<>();
-        for (UserInfo userInfo : userInfoList) {
-            UserInfoRes userInfoRes = new UserInfoRes();
-            BeanUtils.copyProperties(userInfo, userInfoRes);
-            userInfoResList.add(userInfoRes);
+    public EventMessage<String> updateUserInfo(UpdateUserInfoReq updateUserInfoReq) {
+        Optional<UserInfo> userInfoOptional = userInfoRepository.findById(updateUserInfoReq.getUserInfoId());
+        if (userInfoOptional.isEmpty()) {
+            return CommonUtils.setExceptionEventMessage(ResultCode.ERR_2001.getCode(), ResultCode.ERR_2001.getDesc(), null);
         }
-        return CommonUtils.setDefaultEventMessage(userInfoResList);
+        UserInfo userInfo = userInfoOptional.get();
+        BeanUtils.copyProperties(updateUserInfoReq, userInfo);
+        String birthDateString = updateUserInfoReq.getBirthDateString();
+        LocalDate localDate = LocalDate.parse(birthDateString);
+        Date date = Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        userInfo.setBirthDate(date.getTime());
+        userInfoRepository.save(userInfo);
+
+        return CommonUtils.setDefaultEventMessage("success");
     }
 
-    public EventMessage<String> changePassword(ChangePasswordReq changePasswordReq,  BaseUser baseUser) {
-        Optional<UserInfo> userInfoOptional = userInfoRepository.findById(changePasswordReq.getUserInfoId());
+    public EventMessage<String> updateState(UpdateStateReq updateStateReq) {
+        Optional<UserInfo> userInfoOptional = userInfoRepository.findById(updateStateReq.getUserInfoId());
         if (userInfoOptional.isEmpty()) {
-            String code = ResultCode.ERR_2001.getCode();
-            String msg = ResultCode.ERR_2001.getDesc();
-            return CommonUtils.setExceptionEventMessage(code, msg, null);
+            return CommonUtils.setExceptionEventMessage(ResultCode.ERR_2001.getCode(), ResultCode.ERR_2001.getDesc(), null);
+        }
+
+        UserInfo userInfo = userInfoOptional.get();
+        userInfo.setState(updateStateReq.isState());
+        userInfoRepository.save(userInfo);
+
+        return CommonUtils.setDefaultEventMessage("success");
+    }
+
+
+    public EventMessage<List<BaseInfoRes>> findBaseInfo() {
+        List<UserInfo> userInfoList = userInfoRepository.findAll();
+        List<BaseInfoRes> baseInfoResList = new ArrayList<>();
+        for (UserInfo userInfo : userInfoList) {
+            BaseInfoRes baseInfoRes = new BaseInfoRes();
+            BeanUtils.copyProperties(userInfo, baseInfoRes);
+            baseInfoResList.add(baseInfoRes);
+        }
+        return CommonUtils.setDefaultEventMessage(baseInfoResList);
+    }
+
+    public EventMessage<UserInfoRes> getAccessById(long userInfoId) {
+        Optional<UserInfo> userInfoOptional = userInfoRepository.findById(userInfoId);
+        if (userInfoOptional.isEmpty()) {
+            return CommonUtils.setExceptionEventMessage(ResultCode.ERR_2001.getCode(), ResultCode.ERR_2001.getDesc(), null);
+        }
+        UserInfo userInfo = userInfoOptional.get();
+        UserInfoRes userInfoRes = new UserInfoRes();
+        BeanUtils.copyProperties(userInfo, userInfoRes);
+
+        return CommonUtils.setDefaultEventMessage(userInfoRes);
+    }
+
+
+    public EventMessage<String> updatePassword(UpdatePasswordReq updatePasswordReq, BaseUser baseUser) {
+        Optional<UserInfo> userInfoOptional = userInfoRepository.findById(updatePasswordReq.getUserInfoId());
+        if (userInfoOptional.isEmpty()) {
+            return CommonUtils.setExceptionEventMessage(ResultCode.ERR_2001.getCode(), ResultCode.ERR_2001.getDesc(), null);
         }
 
         UserInfo userInfo = userInfoOptional.get();
         // 非使用者本人不允許修改密碼
         if (!Objects.equals(userInfo.getUserInfoId(), baseUser.getUserInfoId())) {
-            String code = ResultCode.ERR_2001.getCode();
-            String msg = ResultCode.ERR_2001.getDesc();
-            return CommonUtils.setExceptionEventMessage(code, msg, null);
+            return CommonUtils.setExceptionEventMessage(ResultCode.ERR_2001.getCode(), ResultCode.ERR_2001.getDesc(), null);
         }
 
         long nowTime = new Date().getTime();
-        String hashPassword = HashUtils.hashPassword(changePasswordReq.getPassword() + "_" + nowTime);
+        String hashPassword = HashUtils.hashPassword(updatePasswordReq.getPassword() + "_" + nowTime);
         userInfo.setPassword(hashPassword);
         userInfo.setPasswordUpdateTime(nowTime);
         userInfoRepository.save(userInfo);
 
-        String msg = ResultCode.ERR_0000.getDesc();
-        return CommonUtils.setDefaultEventMessage(msg);
+        return CommonUtils.setDefaultEventMessage("success");
     }
 
     public BaseUser loadUserByUsername(String userIdString) throws UsernameNotFoundException {
