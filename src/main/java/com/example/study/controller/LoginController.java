@@ -1,8 +1,8 @@
 package com.example.study.controller;
 
 import com.example.study.dto._event.EventMessage;
-import com.example.study.dto.req.LogInReq;
-import com.example.study.dto.req.RegisterUserReq;
+import com.example.study.dto.req.login.LogInReq;
+import com.example.study.dto.req.access.RegisterUserReq;
 import com.example.study.service.LoginService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

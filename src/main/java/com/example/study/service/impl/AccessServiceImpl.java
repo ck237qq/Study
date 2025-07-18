@@ -2,11 +2,11 @@ package com.example.study.service.impl;
 
 import com.example.study.dto._event.EventMessage;
 import com.example.study.dto._event.ResultCode;
-import com.example.study.dto.req.UpdatePasswordReq;
-import com.example.study.dto.req.UpdateStateReq;
-import com.example.study.dto.req.UpdateUserInfoReq;
-import com.example.study.dto.res.BaseInfoRes;
-import com.example.study.dto.res.UserInfoRes;
+import com.example.study.dto.req.access.UpdatePasswordReq;
+import com.example.study.dto.req.access.UpdateStateReq;
+import com.example.study.dto.req.access.UpdateUserInfoReq;
+import com.example.study.dto.res.access.BaseInfoRes;
+import com.example.study.dto.res.access.UserInfoRes;
 import com.example.study.entity.UserInfo;
 import com.example.study.repository.UserInfoRepository;
 import com.example.study.security.BaseUser;

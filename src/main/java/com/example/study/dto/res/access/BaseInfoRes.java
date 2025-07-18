@@ -1,4 +1,4 @@
-package com.example.study.dto.res;
+package com.example.study.dto.res.access;
 
 
 import lombok.Data;

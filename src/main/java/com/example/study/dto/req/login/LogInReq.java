@@ -1,4 +1,4 @@
-package com.example.study.dto.req;
+package com.example.study.dto.req.login;
 
 import lombok.Data;
 

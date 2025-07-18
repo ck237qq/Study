@@ -2,8 +2,8 @@ package com.example.study.service.impl;
 
 import com.example.study.dto._event.EventMessage;
 import com.example.study.dto._event.ResultCode;
-import com.example.study.dto.req.LogInReq;
-import com.example.study.dto.req.RegisterUserReq;
+import com.example.study.dto.req.login.LogInReq;
+import com.example.study.dto.req.access.RegisterUserReq;
 import com.example.study.entity.UserInfo;
 import com.example.study.repository.UserInfoRepository;
 import com.example.study.service.LoginService;
