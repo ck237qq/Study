@@ -9,6 +9,6 @@ public class EditHexagramReq {
 
     private Long hexagramId;
 
-    private List<EditYaoxiangReq> editYaoxiangDtos;
+    private List<EditYaoxiangReq> editYaoxiangReqs;
 
 }

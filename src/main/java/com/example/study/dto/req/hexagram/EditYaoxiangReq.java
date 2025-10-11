@@ -5,7 +5,7 @@ import lombok.Data;
 @Data
 public class EditYaoxiangReq {
 
-    private Long YaoxiangId;
+    private Long yaoxiangId;
 
     private String remark;
 

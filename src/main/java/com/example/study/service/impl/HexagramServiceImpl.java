@@ -28,7 +28,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 
-
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -45,22 +44,24 @@ public class HexagramServiceImpl implements HexagramService {
     public EventMessage<String> editYaoxiangByhexagramId(EditHexagramReq editHexagramDto) {
         List<Yaoxiang> yaoxiangList = yaoxiangRepository.findByHexagramId(editHexagramDto.getHexagramId());
         Map<Long, Yaoxiang> yaoxiangMap = new TreeMap<>();
-        for (Yaoxiang yaoxiang: yaoxiangList) {
+        for (Yaoxiang yaoxiang : yaoxiangList) {
             yaoxiangMap.put(yaoxiang.getYaoxiangId(), yaoxiang);
         }
 
 
-        List<EditYaoxiangReq> editYaoxiangReqs = editHexagramDto.getEditYaoxiangDtos();
+        List<EditYaoxiangReq> editYaoxiangReqs = editHexagramDto.getEditYaoxiangReqs();
         List<Yaoxiang> editYaoxiangList = new ArrayList<>();
-        for (EditYaoxiangReq editYaoxiangReq: editYaoxiangReqs) {
-            if (yaoxiangMap.containsKey(editYaoxiangReq.getYaoxiangId())) {
-                Yaoxiang Yaoxiang = yaoxiangMap.get(editYaoxiangReq.getYaoxiangId());
-                BeanUtils.copyProperties(editYaoxiangReq, Yaoxiang);
-                editYaoxiangList.add(Yaoxiang);
-            } else {
-                String code = ResultCode.ERR_2001.getCode();
-                String msg = ResultCode.ERR_2001.getDesc();
-                return CommonUtils.setExceptionEventMessage(code, msg, null);
+        if (!editYaoxiangReqs.isEmpty()) {
+            for (EditYaoxiangReq editYaoxiangReq : editYaoxiangReqs) {
+                if (yaoxiangMap.containsKey(editYaoxiangReq.getYaoxiangId())) {
+                    Yaoxiang yaoxiang = yaoxiangMap.get(editYaoxiangReq.getYaoxiangId());
+                    BeanUtils.copyProperties(editYaoxiangReq, yaoxiang);
+                    editYaoxiangList.add(yaoxiang);
+                } else {
+                    String code = ResultCode.ERR_2001.getCode();
+                    String msg = ResultCode.ERR_2001.getDesc();
+                    return CommonUtils.setExceptionEventMessage(code, msg, null);
+                }
             }
         }
 
@@ -68,11 +69,11 @@ public class HexagramServiceImpl implements HexagramService {
         return CommonUtils.setDefaultEventMessage("更新成功");
     }
 
-    public EventMessage<List<YaoxiangRes>> findYaoxiangByhexagramId(Long hexagramId){
+    public EventMessage<List<YaoxiangRes>> findYaoxiangByhexagramId(Long hexagramId) {
 
-        List<Yaoxiang> YaoxiangList= yaoxiangRepository.findByHexagramId(hexagramId);
-        List<YaoxiangRes>yaoxiangResList = new ArrayList<>();
-        for (Yaoxiang Yaoxiang: YaoxiangList) {
+        List<Yaoxiang> YaoxiangList = yaoxiangRepository.findByHexagramId(hexagramId);
+        List<YaoxiangRes> yaoxiangResList = new ArrayList<>();
+        for (Yaoxiang Yaoxiang : YaoxiangList) {
             YaoxiangRes yaoxiangRes = new YaoxiangRes();
             BeanUtils.copyProperties(Yaoxiang, yaoxiangRes);
             yaoxiangResList.add(yaoxiangRes);
@@ -80,7 +81,7 @@ public class HexagramServiceImpl implements HexagramService {
         return CommonUtils.setDefaultEventMessage(yaoxiangResList);
     }
 
-    public EventMessage<List<HexagramNameRes>> findHexagramName(){
+    public EventMessage<List<HexagramNameRes>> findHexagramName() {
         List<Hexagram> hexagrams = hexagramRepository.findAll();
         List<HexagramNameRes> hexagramNameResList = new ArrayList<>();
         for (Hexagram hexagram : hexagrams) {
@@ -92,7 +93,7 @@ public class HexagramServiceImpl implements HexagramService {
     }
 
 
-    public EventMessage<List<HexagramRes>> findHexagramDto(){
+    public EventMessage<List<HexagramRes>> findHexagramDto() {
         List<Hexagram> hexagrams = hexagramRepository.findAll();
         List<HexagramRes> hexagramResList = new ArrayList<>();
         for (Hexagram hexagram : hexagrams) {
@@ -104,7 +105,7 @@ public class HexagramServiceImpl implements HexagramService {
         return CommonUtils.setDefaultEventMessage(hexagramResList);
     }
 
-    public EventMessage<List<HexagramKindRes>> findHexagramKindDto(){
+    public EventMessage<List<HexagramKindRes>> findHexagramKindDto() {
 
         List<HexagramKind> hexagramKinds = hexagramKindRepository.findAll();
         List<HexagramKindRes> hexagramKindDtos = new ArrayList<>();
@@ -123,73 +124,73 @@ public class HexagramServiceImpl implements HexagramService {
             hexagramMap.put(hexagram.getHexagramName(), hexagram);
         }
 
-        if(yaoxiangRepository.findAll().isEmpty()) {
-            List<Yaoxiang>addYaoxiangList = new ArrayList<>();
+        if (yaoxiangRepository.findAll().isEmpty()) {
+            List<Yaoxiang> addYaoxiangList = new ArrayList<>();
 
-            addYaoxiangList.addAll(getLines("明夷", new ArrayList<>(Arrays.asList("謙","泰","復","豐","既濟","賁")) ,hexagramMap));
-            addYaoxiangList.addAll(getLines("離", new ArrayList<>(Arrays.asList("旅","大有","噬嗑","賁","同人","豐")) ,hexagramMap));
-            addYaoxiangList.addAll(getLines("升", new ArrayList<>(Arrays.asList("泰","謙","師","恆","井","蠱")) ,hexagramMap));
-            addYaoxiangList.addAll(getLines("震", new ArrayList<>(Arrays.asList("豫","歸妹","豐","復","隨","噬嗑")) ,hexagramMap));
-            addYaoxiangList.addAll(getLines("節", new ArrayList<>(Arrays.asList("坎","屯","需","兌","臨","中孚")) ,hexagramMap));
-            addYaoxiangList.addAll(getLines("大畜", new ArrayList<>(Arrays.asList("蠱","賁","損","大有","小畜","泰")) ,hexagramMap));
-            addYaoxiangList.addAll(getLines("无妄", new ArrayList<>(Arrays.asList("否","履","同人","益","噬嗑","隨")) ,hexagramMap));
-            addYaoxiangList.addAll(getLines("復", new ArrayList<>(Arrays.asList("坤","臨","明夷","震","屯","頤")) ,hexagramMap));
-            addYaoxiangList.addAll(getLines("比", new ArrayList<>(Arrays.asList("屯","坎","蹇","萃","坤","觀")) ,hexagramMap));
-            addYaoxiangList.addAll(getLines("巽", new ArrayList<>(Arrays.asList("小畜","漸","渙","姤","蠱","井")) ,hexagramMap));
-            addYaoxiangList.addAll(getLines("遯", new ArrayList<>(Arrays.asList("同人","姤","否","漸","旅","咸")) ,hexagramMap));
-            addYaoxiangList.addAll(getLines("泰", new ArrayList<>(Arrays.asList("升","明夷","臨","大壯","需","大畜")) ,hexagramMap));
-            addYaoxiangList.addAll(getLines("隨", new ArrayList<>(Arrays.asList("萃","兌","革","屯","震","无妄")) ,hexagramMap));
-            addYaoxiangList.addAll(getLines("困", new ArrayList<>(Arrays.asList("兌","萃","大過","坎","解","訟")) ,hexagramMap));
-            addYaoxiangList.addAll(getLines("大壯", new ArrayList<>(Arrays.asList("恆","豐","歸妹","泰","夬","大有")) ,hexagramMap));
-            addYaoxiangList.addAll(getLines("咸", new ArrayList<>(Arrays.asList("革","大過","萃","蹇","小過","遯")) ,hexagramMap));
-            addYaoxiangList.addAll(getLines("萃", new ArrayList<>(Arrays.asList("隨","困","咸","比","豫","否")) ,hexagramMap));
-            addYaoxiangList.addAll(getLines("剝", new ArrayList<>(Arrays.asList("頤","蒙","艮","晉","觀","坤")) ,hexagramMap));
-            addYaoxiangList.addAll(getLines("蒙", new ArrayList<>(Arrays.asList("損","剝","蠱","未濟","渙","師")) ,hexagramMap));
-            addYaoxiangList.addAll(getLines("漸", new ArrayList<>(Arrays.asList("家人","巽","觀","遯","艮","蹇")) ,hexagramMap));
-            addYaoxiangList.addAll(getLines("蹇", new ArrayList<>(Arrays.asList("既濟","井","比","咸","謙","漸")) ,hexagramMap));
-            addYaoxiangList.addAll(getLines("坤", new ArrayList<>(Arrays.asList("復","師","謙","豫","比","剝")) ,hexagramMap));
-            addYaoxiangList.addAll(getLines("損", new ArrayList<>(Arrays.asList("蒙","頤","大畜","睽","中孚","臨")) ,hexagramMap));
-            addYaoxiangList.addAll(getLines("需", new ArrayList<>(Arrays.asList("井","既濟","節","夬","泰","小畜")) ,hexagramMap));
-            addYaoxiangList.addAll(getLines("訟", new ArrayList<>(Arrays.asList("履","否","姤","渙","未濟","困")) ,hexagramMap));
-            addYaoxiangList.addAll(getLines("頤", new ArrayList<>(Arrays.asList("剝","損","賁","噬嗑","益","復")) ,hexagramMap));
-            addYaoxiangList.addAll(getLines("渙", new ArrayList<>(Arrays.asList("中孚","觀","巽","訟","蒙","坎")) ,hexagramMap));
-            addYaoxiangList.addAll(getLines("革", new ArrayList<>(Arrays.asList("咸","夬","隨","既濟","豐","同人")) ,hexagramMap));
-            addYaoxiangList.addAll(getLines("師", new ArrayList<>(Arrays.asList("臨","坤","升","解","坎","蒙")) ,hexagramMap));
-            addYaoxiangList.addAll(getLines("履", new ArrayList<>(Arrays.asList("訟","无妄","乾","中孚","睽","兌")) ,hexagramMap));
-            addYaoxiangList.addAll(getLines("鼎", new ArrayList<>(Arrays.asList("大有","旅","未濟","蠱","姤","恆")) ,hexagramMap));
-            addYaoxiangList.addAll(getLines("中孚", new ArrayList<>(Arrays.asList("渙","益","小畜","履","損","節")) ,hexagramMap));
-            addYaoxiangList.addAll(getLines("夬", new ArrayList<>(Arrays.asList("大過","革","兌","需","大壯","乾")) ,hexagramMap));
-            addYaoxiangList.addAll(getLines("賁", new ArrayList<>(Arrays.asList("艮","大畜","頤","離","家人","明夷")) ,hexagramMap));
-            addYaoxiangList.addAll(getLines("既濟", new ArrayList<>(Arrays.asList("蹇","需","屯","革","明夷","家人")) ,hexagramMap));
-            addYaoxiangList.addAll(getLines("大有", new ArrayList<>(Arrays.asList("鼎","離","睽","大畜","乾","大壯")) ,hexagramMap));
-            addYaoxiangList.addAll(getLines("艮", new ArrayList<>(Arrays.asList("賁","蠱","剝","旅","漸","謙")) ,hexagramMap));
-            addYaoxiangList.addAll(getLines("同人", new ArrayList<>(Arrays.asList("遯","乾","无妄","家人","離","革")) ,hexagramMap));
-            addYaoxiangList.addAll(getLines("未濟", new ArrayList<>(Arrays.asList("睽","晉","鼎","蒙","訟","解")) ,hexagramMap));
-            addYaoxiangList.addAll(getLines("噬嗑", new ArrayList<>(Arrays.asList("晉","睽","離","頤","无妄","震")) ,hexagramMap));
-            addYaoxiangList.addAll(getLines("豐", new ArrayList<>(Arrays.asList("小過","大壯","震","明夷","革","離")) ,hexagramMap));
-            addYaoxiangList.addAll(getLines("解", new ArrayList<>(Arrays.asList("歸妹","豫","恆","師","困","未濟")) ,hexagramMap));
-            addYaoxiangList.addAll(getLines("家人", new ArrayList<>(Arrays.asList("漸","小畜","益","同人","賁","既濟")) ,hexagramMap));
-            addYaoxiangList.addAll(getLines("蠱", new ArrayList<>(Arrays.asList("大畜","艮","蒙","鼎","巽","升")) ,hexagramMap));
-            addYaoxiangList.addAll(getLines("臨", new ArrayList<>(Arrays.asList("師","復","泰","歸妹","節","損")) ,hexagramMap));
-            addYaoxiangList.addAll(getLines("益", new ArrayList<>(Arrays.asList("觀","中孚","家人","无妄","頤","屯")) ,hexagramMap));
-            addYaoxiangList.addAll(getLines("睽", new ArrayList<>(Arrays.asList("未濟","噬嗑","大有","損","履","歸妹")) ,hexagramMap));
-            addYaoxiangList.addAll(getLines("否", new ArrayList<>(Arrays.asList("无妄","訟","遯","觀","晉","萃")) ,hexagramMap));
-            addYaoxiangList.addAll(getLines("姤", new ArrayList<>(Arrays.asList("乾","遯","訟","巽","鼎","大過")) ,hexagramMap));
-            addYaoxiangList.addAll(getLines("豫", new ArrayList<>(Arrays.asList("震","解","小過","坤","萃","晉")) ,hexagramMap));
-            addYaoxiangList.addAll(getLines("歸妹", new ArrayList<>(Arrays.asList("解","震","大壯","臨","兌","睽")) ,hexagramMap));
-            addYaoxiangList.addAll(getLines("旅", new ArrayList<>(Arrays.asList("離","鼎","晉","艮","遯","小過")) ,hexagramMap));
-            addYaoxiangList.addAll(getLines("乾", new ArrayList<>(Arrays.asList("姤","同人","履","小畜","大有","夬")) ,hexagramMap));
-            addYaoxiangList.addAll(getLines("屯", new ArrayList<>(Arrays.asList("比","節","既濟","隨","復","益")) ,hexagramMap));
-            addYaoxiangList.addAll(getLines("小過", new ArrayList<>(Arrays.asList("豐","恆","豫","謙","咸","旅")) ,hexagramMap));
-            addYaoxiangList.addAll(getLines("井", new ArrayList<>(Arrays.asList("需","蹇","坎","大過","升","巽")) ,hexagramMap));
-            addYaoxiangList.addAll(getLines("晉", new ArrayList<>(Arrays.asList("噬嗑","未濟","旅","剝","否","豫")) ,hexagramMap));
-            addYaoxiangList.addAll(getLines("恆", new ArrayList<>(Arrays.asList("大壯","小過","解","升","大過","鼎")) ,hexagramMap));
-            addYaoxiangList.addAll(getLines("坎", new ArrayList<>(Arrays.asList("節","比","井","困","師","渙")) ,hexagramMap));
-            addYaoxiangList.addAll(getLines("大過", new ArrayList<>(Arrays.asList("夬","咸","困","井","恆","姤")) ,hexagramMap));
-            addYaoxiangList.addAll(getLines("兌", new ArrayList<>(Arrays.asList("困","隨","夬","節","歸妹","履")) ,hexagramMap));
-            addYaoxiangList.addAll(getLines("謙", new ArrayList<>(Arrays.asList("明夷","升","坤","小過","蹇","艮")) ,hexagramMap));
-            addYaoxiangList.addAll(getLines("小畜", new ArrayList<>(Arrays.asList("巽","家人","中孚","乾","大畜","需")) ,hexagramMap));
-            addYaoxiangList.addAll(getLines("觀", new ArrayList<>(Arrays.asList("益","渙","漸","否","剝","比")) ,hexagramMap));
+            addYaoxiangList.addAll(getLines("明夷", new ArrayList<>(Arrays.asList("謙", "泰", "復", "豐", "既濟", "賁")), hexagramMap));
+            addYaoxiangList.addAll(getLines("離", new ArrayList<>(Arrays.asList("旅", "大有", "噬嗑", "賁", "同人", "豐")), hexagramMap));
+            addYaoxiangList.addAll(getLines("升", new ArrayList<>(Arrays.asList("泰", "謙", "師", "恆", "井", "蠱")), hexagramMap));
+            addYaoxiangList.addAll(getLines("震", new ArrayList<>(Arrays.asList("豫", "歸妹", "豐", "復", "隨", "噬嗑")), hexagramMap));
+            addYaoxiangList.addAll(getLines("節", new ArrayList<>(Arrays.asList("坎", "屯", "需", "兌", "臨", "中孚")), hexagramMap));
+            addYaoxiangList.addAll(getLines("大畜", new ArrayList<>(Arrays.asList("蠱", "賁", "損", "大有", "小畜", "泰")), hexagramMap));
+            addYaoxiangList.addAll(getLines("无妄", new ArrayList<>(Arrays.asList("否", "履", "同人", "益", "噬嗑", "隨")), hexagramMap));
+            addYaoxiangList.addAll(getLines("復", new ArrayList<>(Arrays.asList("坤", "臨", "明夷", "震", "屯", "頤")), hexagramMap));
+            addYaoxiangList.addAll(getLines("比", new ArrayList<>(Arrays.asList("屯", "坎", "蹇", "萃", "坤", "觀")), hexagramMap));
+            addYaoxiangList.addAll(getLines("巽", new ArrayList<>(Arrays.asList("小畜", "漸", "渙", "姤", "蠱", "井")), hexagramMap));
+            addYaoxiangList.addAll(getLines("遯", new ArrayList<>(Arrays.asList("同人", "姤", "否", "漸", "旅", "咸")), hexagramMap));
+            addYaoxiangList.addAll(getLines("泰", new ArrayList<>(Arrays.asList("升", "明夷", "臨", "大壯", "需", "大畜")), hexagramMap));
+            addYaoxiangList.addAll(getLines("隨", new ArrayList<>(Arrays.asList("萃", "兌", "革", "屯", "震", "无妄")), hexagramMap));
+            addYaoxiangList.addAll(getLines("困", new ArrayList<>(Arrays.asList("兌", "萃", "大過", "坎", "解", "訟")), hexagramMap));
+            addYaoxiangList.addAll(getLines("大壯", new ArrayList<>(Arrays.asList("恆", "豐", "歸妹", "泰", "夬", "大有")), hexagramMap));
+            addYaoxiangList.addAll(getLines("咸", new ArrayList<>(Arrays.asList("革", "大過", "萃", "蹇", "小過", "遯")), hexagramMap));
+            addYaoxiangList.addAll(getLines("萃", new ArrayList<>(Arrays.asList("隨", "困", "咸", "比", "豫", "否")), hexagramMap));
+            addYaoxiangList.addAll(getLines("剝", new ArrayList<>(Arrays.asList("頤", "蒙", "艮", "晉", "觀", "坤")), hexagramMap));
+            addYaoxiangList.addAll(getLines("蒙", new ArrayList<>(Arrays.asList("損", "剝", "蠱", "未濟", "渙", "師")), hexagramMap));
+            addYaoxiangList.addAll(getLines("漸", new ArrayList<>(Arrays.asList("家人", "巽", "觀", "遯", "艮", "蹇")), hexagramMap));
+            addYaoxiangList.addAll(getLines("蹇", new ArrayList<>(Arrays.asList("既濟", "井", "比", "咸", "謙", "漸")), hexagramMap));
+            addYaoxiangList.addAll(getLines("坤", new ArrayList<>(Arrays.asList("復", "師", "謙", "豫", "比", "剝")), hexagramMap));
+            addYaoxiangList.addAll(getLines("損", new ArrayList<>(Arrays.asList("蒙", "頤", "大畜", "睽", "中孚", "臨")), hexagramMap));
+            addYaoxiangList.addAll(getLines("需", new ArrayList<>(Arrays.asList("井", "既濟", "節", "夬", "泰", "小畜")), hexagramMap));
+            addYaoxiangList.addAll(getLines("訟", new ArrayList<>(Arrays.asList("履", "否", "姤", "渙", "未濟", "困")), hexagramMap));
+            addYaoxiangList.addAll(getLines("頤", new ArrayList<>(Arrays.asList("剝", "損", "賁", "噬嗑", "益", "復")), hexagramMap));
+            addYaoxiangList.addAll(getLines("渙", new ArrayList<>(Arrays.asList("中孚", "觀", "巽", "訟", "蒙", "坎")), hexagramMap));
+            addYaoxiangList.addAll(getLines("革", new ArrayList<>(Arrays.asList("咸", "夬", "隨", "既濟", "豐", "同人")), hexagramMap));
+            addYaoxiangList.addAll(getLines("師", new ArrayList<>(Arrays.asList("臨", "坤", "升", "解", "坎", "蒙")), hexagramMap));
+            addYaoxiangList.addAll(getLines("履", new ArrayList<>(Arrays.asList("訟", "无妄", "乾", "中孚", "睽", "兌")), hexagramMap));
+            addYaoxiangList.addAll(getLines("鼎", new ArrayList<>(Arrays.asList("大有", "旅", "未濟", "蠱", "姤", "恆")), hexagramMap));
+            addYaoxiangList.addAll(getLines("中孚", new ArrayList<>(Arrays.asList("渙", "益", "小畜", "履", "損", "節")), hexagramMap));
+            addYaoxiangList.addAll(getLines("夬", new ArrayList<>(Arrays.asList("大過", "革", "兌", "需", "大壯", "乾")), hexagramMap));
+            addYaoxiangList.addAll(getLines("賁", new ArrayList<>(Arrays.asList("艮", "大畜", "頤", "離", "家人", "明夷")), hexagramMap));
+            addYaoxiangList.addAll(getLines("既濟", new ArrayList<>(Arrays.asList("蹇", "需", "屯", "革", "明夷", "家人")), hexagramMap));
+            addYaoxiangList.addAll(getLines("大有", new ArrayList<>(Arrays.asList("鼎", "離", "睽", "大畜", "乾", "大壯")), hexagramMap));
+            addYaoxiangList.addAll(getLines("艮", new ArrayList<>(Arrays.asList("賁", "蠱", "剝", "旅", "漸", "謙")), hexagramMap));
+            addYaoxiangList.addAll(getLines("同人", new ArrayList<>(Arrays.asList("遯", "乾", "无妄", "家人", "離", "革")), hexagramMap));
+            addYaoxiangList.addAll(getLines("未濟", new ArrayList<>(Arrays.asList("睽", "晉", "鼎", "蒙", "訟", "解")), hexagramMap));
+            addYaoxiangList.addAll(getLines("噬嗑", new ArrayList<>(Arrays.asList("晉", "睽", "離", "頤", "无妄", "震")), hexagramMap));
+            addYaoxiangList.addAll(getLines("豐", new ArrayList<>(Arrays.asList("小過", "大壯", "震", "明夷", "革", "離")), hexagramMap));
+            addYaoxiangList.addAll(getLines("解", new ArrayList<>(Arrays.asList("歸妹", "豫", "恆", "師", "困", "未濟")), hexagramMap));
+            addYaoxiangList.addAll(getLines("家人", new ArrayList<>(Arrays.asList("漸", "小畜", "益", "同人", "賁", "既濟")), hexagramMap));
+            addYaoxiangList.addAll(getLines("蠱", new ArrayList<>(Arrays.asList("大畜", "艮", "蒙", "鼎", "巽", "升")), hexagramMap));
+            addYaoxiangList.addAll(getLines("臨", new ArrayList<>(Arrays.asList("師", "復", "泰", "歸妹", "節", "損")), hexagramMap));
+            addYaoxiangList.addAll(getLines("益", new ArrayList<>(Arrays.asList("觀", "中孚", "家人", "无妄", "頤", "屯")), hexagramMap));
+            addYaoxiangList.addAll(getLines("睽", new ArrayList<>(Arrays.asList("未濟", "噬嗑", "大有", "損", "履", "歸妹")), hexagramMap));
+            addYaoxiangList.addAll(getLines("否", new ArrayList<>(Arrays.asList("无妄", "訟", "遯", "觀", "晉", "萃")), hexagramMap));
+            addYaoxiangList.addAll(getLines("姤", new ArrayList<>(Arrays.asList("乾", "遯", "訟", "巽", "鼎", "大過")), hexagramMap));
+            addYaoxiangList.addAll(getLines("豫", new ArrayList<>(Arrays.asList("震", "解", "小過", "坤", "萃", "晉")), hexagramMap));
+            addYaoxiangList.addAll(getLines("歸妹", new ArrayList<>(Arrays.asList("解", "震", "大壯", "臨", "兌", "睽")), hexagramMap));
+            addYaoxiangList.addAll(getLines("旅", new ArrayList<>(Arrays.asList("離", "鼎", "晉", "艮", "遯", "小過")), hexagramMap));
+            addYaoxiangList.addAll(getLines("乾", new ArrayList<>(Arrays.asList("姤", "同人", "履", "小畜", "大有", "夬")), hexagramMap));
+            addYaoxiangList.addAll(getLines("屯", new ArrayList<>(Arrays.asList("比", "節", "既濟", "隨", "復", "益")), hexagramMap));
+            addYaoxiangList.addAll(getLines("小過", new ArrayList<>(Arrays.asList("豐", "恆", "豫", "謙", "咸", "旅")), hexagramMap));
+            addYaoxiangList.addAll(getLines("井", new ArrayList<>(Arrays.asList("需", "蹇", "坎", "大過", "升", "巽")), hexagramMap));
+            addYaoxiangList.addAll(getLines("晉", new ArrayList<>(Arrays.asList("噬嗑", "未濟", "旅", "剝", "否", "豫")), hexagramMap));
+            addYaoxiangList.addAll(getLines("恆", new ArrayList<>(Arrays.asList("大壯", "小過", "解", "升", "大過", "鼎")), hexagramMap));
+            addYaoxiangList.addAll(getLines("坎", new ArrayList<>(Arrays.asList("節", "比", "井", "困", "師", "渙")), hexagramMap));
+            addYaoxiangList.addAll(getLines("大過", new ArrayList<>(Arrays.asList("夬", "咸", "困", "井", "恆", "姤")), hexagramMap));
+            addYaoxiangList.addAll(getLines("兌", new ArrayList<>(Arrays.asList("困", "隨", "夬", "節", "歸妹", "履")), hexagramMap));
+            addYaoxiangList.addAll(getLines("謙", new ArrayList<>(Arrays.asList("明夷", "升", "坤", "小過", "蹇", "艮")), hexagramMap));
+            addYaoxiangList.addAll(getLines("小畜", new ArrayList<>(Arrays.asList("巽", "家人", "中孚", "乾", "大畜", "需")), hexagramMap));
+            addYaoxiangList.addAll(getLines("觀", new ArrayList<>(Arrays.asList("益", "渙", "漸", "否", "剝", "比")), hexagramMap));
 
             yaoxiangRepository.saveAll(addYaoxiangList);
         }
@@ -200,7 +201,7 @@ public class HexagramServiceImpl implements HexagramService {
     private List<Yaoxiang> getLines(String main, List<String> YaoxiangNameList, Map<String, Hexagram> hexagramMap) {
         long hexagramId = hexagramMap.get(main).getHexagramId();
 
-        List<Yaoxiang>YaoxiangList = new ArrayList<>();
+        List<Yaoxiang> YaoxiangList = new ArrayList<>();
         for (int i = 0; i < YaoxiangNameList.size(); i++) {
             String YaoxiangName = YaoxiangNameList.get(i);
             if (hexagramMap.containsKey(YaoxiangName)) {
