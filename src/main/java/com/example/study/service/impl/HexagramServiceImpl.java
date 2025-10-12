@@ -1,12 +1,6 @@
 package com.example.study.service.impl;
 
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-
 import com.example.study.dto._event.EventMessage;
 import com.example.study.dto._event.ResultCode;
 import com.example.study.dto.req.hexagram.EditHexagramReq;
@@ -24,11 +18,15 @@ import com.example.study.repository.YaoxiangRepository;
 import com.example.study.service.HexagramService;
 import com.example.study.utils.CommonUtils;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
-
-import lombok.extern.slf4j.Slf4j;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 @Slf4j
 @Service

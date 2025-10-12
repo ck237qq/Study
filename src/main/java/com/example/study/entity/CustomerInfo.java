@@ -6,25 +6,20 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import java.time.LocalDateTime;
 
 /**
- * 爻象
+ * 顧客
  */
 @Data
 @Entity
-public class Yaoxiang {
+public class CustomerInfo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long yaoxiangId;
+    private Long customerInfoId;
 
-    private Long hexagramId;
+    private LocalDateTime birthdayDate;
 
-    private Long hexagramYaoxiangId;
-
-    private int index;
-
-    private String remark;
-
-    private String state;
+    private String customerName;
 
 }

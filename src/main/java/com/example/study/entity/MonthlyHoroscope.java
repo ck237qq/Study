@@ -8,23 +8,21 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 /**
- * 爻象
+ * 每月運勢
  */
 @Data
 @Entity
-public class Yaoxiang {
+public class MonthlyHoroscope {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long monthlyHoroscopeId;
+
+    private Long customerInfoId;
+
+    private Long year;
+
+    private Long month;
+
     private Long yaoxiangId;
-
-    private Long hexagramId;
-
-    private Long hexagramYaoxiangId;
-
-    private int index;
-
-    private String remark;
-
-    private String state;
 
 }
