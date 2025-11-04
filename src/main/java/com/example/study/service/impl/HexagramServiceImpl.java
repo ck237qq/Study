@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,6 +32,7 @@ import java.util.TreeMap;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@CrossOrigin(origins = { "*" })
 public class HexagramServiceImpl implements HexagramService {
 
     private final HexagramKindRepository hexagramKindRepository;
@@ -65,6 +67,17 @@ public class HexagramServiceImpl implements HexagramService {
 
         yaoxiangRepository.saveAll(editYaoxiangList);
         return CommonUtils.setDefaultEventMessage("更新成功");
+    }
+
+    public EventMessage<List<YaoxiangRes>> findYaoxiang() {
+        List<Yaoxiang> YaoxiangList = yaoxiangRepository.findAll();
+        List<YaoxiangRes> yaoxiangResList = new ArrayList<>();
+        for (Yaoxiang Yaoxiang : YaoxiangList) {
+            YaoxiangRes yaoxiangRes = new YaoxiangRes();
+            BeanUtils.copyProperties(Yaoxiang, yaoxiangRes);
+            yaoxiangResList.add(yaoxiangRes);
+        }
+        return CommonUtils.setDefaultEventMessage(yaoxiangResList);
     }
 
     public EventMessage<List<YaoxiangRes>> findYaoxiangByhexagramId(Long hexagramId) {
@@ -208,8 +221,6 @@ public class HexagramServiceImpl implements HexagramService {
                 Yaoxiang.setHexagramYaoxiangId(hexagramMap.get(YaoxiangName).getHexagramId());
                 Yaoxiang.setIndex(i);
                 YaoxiangList.add(Yaoxiang);
-            } else {
-                System.out.println(YaoxiangName);
             }
         }
         return YaoxiangList;

@@ -7,6 +7,8 @@ import com.example.study.service.MonthlyHoroscopeService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,6 +19,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/monthlyHoroscopeManage")
 @Tag(name = "顧客流年管理")
+@CrossOrigin(origins = { "*" })
 public class MonthlyHoroscopeController {
     private final MonthlyHoroscopeService monthlyHoroscopeService;
 
@@ -29,7 +32,7 @@ public class MonthlyHoroscopeController {
 
     @Operation(summary = "更新指定使用者當月運勢", description = "更新指定使用者當月運勢")
     @RequestMapping(value = "/saveMonthlyHoroscope", method = RequestMethod.POST)
-    public EventMessage<String> saveMonthlyHoroscope(MonthlyHoroscopeSaveReq monthlyHoroscopeSaveReq) {
+    public EventMessage<String> saveMonthlyHoroscope(@RequestBody MonthlyHoroscopeSaveReq monthlyHoroscopeSaveReq) {
         return monthlyHoroscopeService.saveMonthlyHoroscope(monthlyHoroscopeSaveReq);
     }
 

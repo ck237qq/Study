@@ -10,7 +10,6 @@ import java.util.List;
 @Repository
 public interface MonthlyHoroscopeRepository extends JpaRepository<MonthlyHoroscope, Long> {
 
-    List<MonthlyHoroscope> findByCustomerInfoIdAndYearAndMonth(Long customerInfoId, Long year,Long month);
 
     List<MonthlyHoroscope> findByCustomerInfoIdAndYear(Long customerInfoId, Long year);
 

@@ -4,6 +4,7 @@ import com.example.study.dto._event.EventMessage;
 import com.example.study.dto.res.airbnb.carRent.LocationRes;
 import com.example.study.service.airbnb.carRent.LocationService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,6 +15,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/carRent")
+@CrossOrigin(origins = { "*" })
 public class LocationController {
     private final LocationService locationService;
 

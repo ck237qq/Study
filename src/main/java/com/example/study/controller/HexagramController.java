@@ -11,6 +11,7 @@ import com.example.study.service.HexagramService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -22,10 +23,10 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/site")
 @Tag(name = "卦象管理")
+@CrossOrigin(origins = { "*" })
 public class HexagramController {
 
     private final HexagramService hexagramService;
-
 
     @Operation(summary = "修改爻象", description = "修改爻象")
     @RequestMapping(value = "/editYaoxiangByhexagramId", method = RequestMethod.PUT)
@@ -33,7 +34,14 @@ public class HexagramController {
         return hexagramService.editYaoxiangByhexagramId(editHexagramReq);
     }
 
+
     @Operation(summary = "查詢爻象", description = "查詢爻象")
+    @RequestMapping(value = "/findYaoxiang", method = RequestMethod.GET)
+    public EventMessage<List<YaoxiangRes>> findYaoxiang() {
+        return hexagramService.findYaoxiang();
+    }
+
+    @Operation(summary = "查詢爻象對應指定hexagramId", description = "查詢爻象對應指定hexagramId")
     @RequestMapping(value = "/findYaoxiangByhexagramId", method = RequestMethod.GET)
     public EventMessage<List<YaoxiangRes>> findYaoxiangByhexagramId(Long hexagramId) {
         return hexagramService.findYaoxiangByhexagramId(hexagramId);

@@ -13,6 +13,8 @@ public interface HexagramService {
 
     EventMessage<String> editYaoxiangByhexagramId(EditHexagramReq editHexagramReq);
 
+    EventMessage<List<YaoxiangRes>> findYaoxiang();
+
     EventMessage<List<YaoxiangRes>> findYaoxiangByhexagramId(Long hexagram);
 
     EventMessage<List<HexagramNameRes>> findHexagramName();
